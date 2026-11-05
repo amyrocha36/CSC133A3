@@ -1,4 +1,5 @@
 package com.mycompany.a3.gameObjects;
+//
 
 public interface IFoodie {
 

@@ -10,6 +10,7 @@ import com.codename1.ui.Label;
 import com.codename1.ui.layouts.FlowLayout;
 import com.codename1.ui.layouts.GridLayout;
 import com.codename1.ui.plaf.Border;
+//
 
 public class ScoreView extends Container implements Observer{
 

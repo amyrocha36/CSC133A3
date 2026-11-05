@@ -1,6 +1,7 @@
 package com.mycompany.a3.gameObjects;
 import com.codename1.charts.util.ColorUtil;
 import com.codename1.charts.models.Point;
+//
 
 
 public class Ant extends Movable implements IFoodie {

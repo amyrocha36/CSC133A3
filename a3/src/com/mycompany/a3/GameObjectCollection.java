@@ -3,6 +3,7 @@ package com.mycompany.a3;
 import java.util.Vector;
 
 import com.mycompany.a3.gameObjects.GameObject;
+//
 
 
 public class GameObjectCollection implements ICollection {

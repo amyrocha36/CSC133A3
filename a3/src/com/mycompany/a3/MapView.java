@@ -6,6 +6,7 @@ import java.util.Observable;
 import com.codename1.charts.util.ColorUtil;
 import com.codename1.ui.Container;
 import com.codename1.ui.plaf.Border;
+//
 
 public class MapView extends Container implements Observer{
 

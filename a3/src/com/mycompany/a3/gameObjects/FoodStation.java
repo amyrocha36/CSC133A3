@@ -4,6 +4,7 @@ import com.codename1.charts.util.ColorUtil;
 import java.util.Random;
 
 import com.codename1.charts.models.Point;
+//
 
 public class FoodStation extends Fixed {
 

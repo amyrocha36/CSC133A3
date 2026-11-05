@@ -3,6 +3,7 @@ package com.mycompany.a3.commandClasses;
 import com.codename1.ui.*;
 import com.codename1.ui.events.ActionEvent;
 import com.mycompany.a3.GameWorld;
+//
 
 public class CollideWithFlag extends Command {
 
