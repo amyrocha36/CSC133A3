@@ -1,6 +1,6 @@
-package com.mycompany.a2;
+package com.mycompany.a3;
 
-import com.mycompany.a2.gameObjects.GameObject;
+import com.mycompany.a3.gameObjects.GameObject;
 
 public interface ICollection {
 
