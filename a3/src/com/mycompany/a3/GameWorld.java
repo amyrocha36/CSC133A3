@@ -447,18 +447,29 @@ public class GameWorld extends Observable {
 		// get food station with food, simulate collision
 			subject.setLocation(hit.getLocation());
 			
+			int change = 0;
+			System.out.println("Collided with food station. Ant food level is now " + (subject.getFoodLevel()+change) + "Was " + subject.getFoodLevel() + "\n");
+
+			
 		// check prevent going over max food level
 		if (subject.getFoodLevel() + hit.getCapacity() > MAXFOODLEVEL)
 		{
+			change = MAXFOODLEVEL - subject.getFoodLevel();
+			
 			subject.setFoodLevel(MAXFOODLEVEL);
 		}
 		else
 		{
 			subject.setFoodLevel(subject.getFoodLevel() + hit.getCapacity());
+			
+			change = hit.getCapacity();
 		}
 		
 		// phase out food station
-		hit.setCapacity(0);
+		//TEST PHRASE
+		System.out.println("Collided with food station. Food station level " + (hit.getCapacity() - change) + "Was " + hit.getCapacity() + "\n");
+
+		hit.setCapacity(hit.getCapacity() - change);
 		hit.setColor(ColorUtil.rgb(186, 210, 161));
 		
 		// make new food station and add to list
@@ -467,6 +478,7 @@ public class GameWorld extends Observable {
 		totalFoodStations = totalFoodStations+1;
 		
 		System.out.println("Collided with food station. Ant food level is now " + subject.getFoodLevel() + "\n");
+
 		
 		setChanged();
 		notifyObservers();

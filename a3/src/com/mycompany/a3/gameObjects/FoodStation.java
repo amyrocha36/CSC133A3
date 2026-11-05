@@ -14,7 +14,7 @@ public class FoodStation extends Fixed {
 
 	
 	// constants
-	private static final int MAXFOODLEVEL = 10;
+	private static final int MAXFOODLEVEL = 50;
 	
 	// methods
 	/** Constructor */
