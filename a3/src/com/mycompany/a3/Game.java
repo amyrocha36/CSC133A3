@@ -8,16 +8,18 @@ import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.layouts.FlowLayout;
 import com.codename1.ui.plaf.Border;
+import com.codename1.ui.util.UITimer;
 import com.mycompany.a3.commandClasses.*;
 import com.codename1.ui.Toolbar;
 //
 
-public class Game extends Form{
+public class Game extends Form implements Runnable{
 
 	// attributes
 	private GameWorld gw; 
 	private MapView center;
 	private ScoreView north;
+	private UITimer timer = new UITimer(this);
 	
 	// methods
 	public Game() {
@@ -69,7 +71,6 @@ public class Game extends Form{
 		south.add(new MyButton(colFlag));
 		south.add(new MyButton(colSpider));
 		south.add(new MyButton(colFood));
-		south.add(new MyButton(tick));
 		
 		add(BorderLayout.NORTH, north);
 		add(BorderLayout.SOUTH, south);
@@ -100,7 +101,6 @@ public class Game extends Form{
 		addKeyListener('c', setConsumpt);
 		addKeyListener('f', colFood);
 		addKeyListener('g', colSpider);
-		addKeyListener('t', tick);
 		addKeyListener('l', left);
 
 		
@@ -112,5 +112,14 @@ public class Game extends Form{
 		
 		System.out.print("Widht " +center.getWidth() + " Height:" + center.getHeight() + "\n");
 		gw.init();
+		
+		
+		timer.schedule(20, true, this);
 	} 
+	
+	
+	public void run()
+	{
+		gw.tick();
+	}
 }

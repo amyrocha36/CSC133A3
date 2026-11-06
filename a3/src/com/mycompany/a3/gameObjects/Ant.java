@@ -10,7 +10,7 @@ public class Ant extends Movable implements IFoodie {
 	// constants
 	private final static int MAXFOODLEVEL = 100;
 	private final static int CONSUMPTIONMAX = 10; // food consumption
-	private final static int CONSUMPTIONMIN = 1;
+	private final static int CONSUMPTIONMIN = 0;
 	private final static int MAXFLAG = 9;
 	private final static int MAXHEALTH = 10;
 	private static final int ANTSIZE = 75;
@@ -32,7 +32,7 @@ public class Ant extends Movable implements IFoodie {
 				super(ANTSIZE, new Point((maxX/2),(maxY/2)), ColorUtil.rgb(190, 0, 0),  maxX,  maxY);
 		healthLevel = MAXHEALTH;
 		setHeading(0);
-		setSpeed(2);
+		setSpeed(1);
 		setFoodLevel(MAXFOODLEVEL);
 		foodConsumptionRate = 2;
 		lastFlagReached = 1;
@@ -95,7 +95,7 @@ public class Ant extends Movable implements IFoodie {
 		
 		this.healthLevel = health;
 		
-		if (getSpeed() > health)
+		if ((getSpeed()) > health)
 		{
 			setSpeed(health);
 		}
@@ -146,7 +146,7 @@ public class Ant extends Movable implements IFoodie {
 	@Override
 	public void setSpeed(int speed) 
 	{
-		if (speed < 0 || speed > MAXIMUMSPEED || speed > healthLevel)
+		if (speed < 0 || speed > MAXIMUMSPEED || speed > (healthLevel))
 		{
 			throw new IllegalArgumentException("PROGRAM ERROR: Speed must be between 0 and " + healthLevel + " .");
 		}
@@ -172,7 +172,7 @@ public class Ant extends Movable implements IFoodie {
 		}
 
 		setSpeed(getSpeed() + 1);
-	}
+		}
 	
 	/** decreases the speed of the ant
 	 *  @return N/A

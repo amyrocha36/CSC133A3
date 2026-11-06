@@ -96,9 +96,7 @@ public class Flag extends Fixed {
 				
 				x = x - (small.stringWidth(text));
 				y = y - (small.getHeight());
-				
-				System.out.println("test string width" + small.stringWidth(text) + "\n");
-				
+								
 				g.drawString((text), x, y);
 			}
 }

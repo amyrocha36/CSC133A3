@@ -25,10 +25,10 @@ public abstract class GameObject implements IDrawable {
 		this.size = size;
 		this.location = location;
 		this.color = color;
-		MAXX = maxX - size;
-		MAXY = maxY - size;
-		MINX = size;
-		MINY = size;
+		MAXX = maxX - (size/2);
+		MAXY = maxY - (size/2);
+		MINX = (size/2);
+		MINY = (size/2);
 	}
 	
 	public abstract void draw(Graphics g, Point pCmpRelPrnt);

@@ -101,7 +101,7 @@ public class ScoreView extends Container implements Observer{
 		
 		
 		// set clock label
-		temp = Integer.toString(subject.getTime());		
+		temp = Integer.toString((int)(subject.getTime()));		
 		clock.setText(clockText + temp);
 		
 		// set flag label

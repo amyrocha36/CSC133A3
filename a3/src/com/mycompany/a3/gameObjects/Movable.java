@@ -25,13 +25,15 @@ public abstract class Movable extends GameObject {
 	/** Allows object to move in the direction of heading at speed.
 	 *  @return N/A
 	 *  @preconditions heading, foodLevel, and speed must have non-zero values */
-	public void move() 
+	public void move(float elapsed) 
 	{
 		//NOTE: 0,0 IS BOTTOM LEFT HAND CORNER
 		//NOTE: 0 DEGREES IS ACTUALLY RIGHT SO SHIFT BY 90
+		float newSpeed = (speed * elapsed)/10;
+		
 		double headingRadians = Math.toRadians((360-heading)+90);
-		double deltaX = Math.cos(headingRadians) * speed;
-		double deltaY = Math.sin(headingRadians)* speed;
+		double deltaX = Math.cos(headingRadians) * newSpeed;
+		double deltaY = Math.sin(headingRadians)* newSpeed;
 		int newX = (int)getLocation().getX() + (int)deltaX;
 		int newY = (int)getLocation().getY() + (int)deltaY;
 		

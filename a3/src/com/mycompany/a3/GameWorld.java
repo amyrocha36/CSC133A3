@@ -18,6 +18,7 @@ public class GameWorld extends Observable {
 	
 	// attributes
 	private int clock;
+	private int clockMili =0;
 	private int lives;
 	private boolean sound = false;
 	private GameObjectCollection gameObjects;
@@ -181,7 +182,7 @@ public class GameWorld extends Observable {
 	/** Returns the number of ticks that has passed on the clock.
 	 *  @return time in "ticks"
 	 *  @preconditions clock must have a value */
-	public int getTime() 
+	public float getTime() 
 	{
 		return clock;
 	}
@@ -267,8 +268,6 @@ public class GameWorld extends Observable {
 			System.exit(0);
 		}
 		subject.accelerate();
-		System.out.println("Accelerated to " + subject.getSpeed() + " blocks per tick\n");
-
 		setChanged();
 		notifyObservers();
 		
@@ -294,7 +293,6 @@ public class GameWorld extends Observable {
 			System.exit(0);
 		}
 		subject.brake();
-		System.out.println("Decelerated to " + subject.getSpeed() + " blocks per tick \n");
 
 		setChanged();
 		notifyObservers();
@@ -326,10 +324,7 @@ public class GameWorld extends Observable {
 		int addedValue = generator.nextInt(40)-20; // between -20 and +20
 		
 		subject.setFoodConsumption(currentRate + addedValue);
-		
-		System.out.println("New food consumption rate is " + 
-				subject.getFoodConsumption() + "\n");
-		
+				
 		setChanged();
 		notifyObservers();
 		
@@ -385,12 +380,10 @@ public class GameWorld extends Observable {
 					}
 		
 					subject.setLocation(hit.getLocation());
-					System.out.println("Collided with flag " + (number) + "\n");
 			
 					if (subject.getLastFlagReached() == number-1)
 					{
 						subject.setLastFlagReached(number);
-						System.out.println("New highest Flag is " + subject.getLastFlagReached() + "\n");
 				
 						// win condition
 						if (number == totalFlags)
@@ -402,13 +395,8 @@ public class GameWorld extends Observable {
 					}
 					else
 					{
-						System.out.println("To advance, reach flag " + (subject.getLastFlagReached()+1) +"\n");
 					}
 			
-				}
-				else
-				{
-					System.out.println("Flag " + (number) + " does not exist. Largest flag number spawned is 6. \n");
 				}
 			} catch (NumberFormatException e) 
 			{
@@ -459,7 +447,6 @@ public class GameWorld extends Observable {
 			subject.setLocation(hit.getLocation());
 			
 			int change = 0;
-			System.out.println("Collided with food station. Ant food level is now " + (subject.getFoodLevel()+change) + "Was " + subject.getFoodLevel() + "\n");
 
 			
 		// check prevent going over max food level
@@ -477,8 +464,6 @@ public class GameWorld extends Observable {
 		}
 		
 		// phase out food station
-		//TEST PHRASE
-		System.out.println("Collided with food station. Food station level " + (hit.getCapacity() - change) + "Was " + hit.getCapacity() + "\n");
 
 		hit.setCapacity(hit.getCapacity() - change);
 		hit.setColor(ColorUtil.rgb(186, 210, 161));
@@ -488,8 +473,6 @@ public class GameWorld extends Observable {
 		gameObjects.add(newStation);
 		totalFoodStations = totalFoodStations+1;
 		
-		System.out.println("Collided with food station. Ant food level is now " + subject.getFoodLevel() + "\n");
-
 		
 		setChanged();
 		notifyObservers();
@@ -553,7 +536,6 @@ public class GameWorld extends Observable {
 			subject.setHealthLevel(subject.getHealthLevel()-1);
 			subject.setColor(ColorUtil.rgb(190, 190, 190));
 			lives--;
-			System.out.println("Ant is now dead. You have " +lives+ " remaining.\n");
 			
 			if (lives <=0)
 			{
@@ -561,16 +543,13 @@ public class GameWorld extends Observable {
 				System.exit(0);
 			}
 			
-			System.out.println("Resetting game...\n");
 			init();
-			System.out.println("Game reset!\n");
 			return;
 		}
 		else
 		{
 			subject.setHealthLevel(subject.getHealthLevel()-1);
 			subject.setColor(ColorUtil.rgb(ColorUtil.red(subject.getColor()), ColorUtil.green(subject.getColor())+19, ColorUtil.blue(subject.getColor())+19));
-			System.out.println("Ant has been damaged! Ant health is now " + subject.getHealthLevel() + "\n");
 		}
 		
 		setChanged();
@@ -602,9 +581,7 @@ public class GameWorld extends Observable {
 		
 		String display = "Lives: " + lives + " Time: " + clock + " Highest Flag: " + subject.getLastFlagReached()
 		+ " Food Level: " + subject.getFoodLevel() + " Health: " + subject.getHealthLevel() + "\n";
-		
-		System.out.println(display);
-	}
+		}
 	
 	
 	/** Displays basic directions for the game including key bindings.
@@ -646,10 +623,7 @@ public class GameWorld extends Observable {
 			total = total + next.toString();
 		}
 		
-		
-		// print map to screen
-		System.out.println(total);
-	}
+			}
 	
 	
 	/** Increments the clock by one tick. Updates spider heading, movable object
@@ -660,6 +634,13 @@ public class GameWorld extends Observable {
 	{
 
 		IIterator iter = gameObjects.getIterator();
+		// increment game clock
+		clockMili = clockMili + 20;
+		
+		if ((clockMili % 100) == 0)
+		{
+			clock++;
+		}
 		
 		
 		Ant player = null;
@@ -684,46 +665,39 @@ public class GameWorld extends Observable {
 			if (temp instanceof Movable)
 			{
 				Movable move = (Movable)temp;
-				move.move();
+				move.move(20);
 
 			}
 		}
 	
-		
-		// reduce ant food level
-		int proposed = player.getFoodLevel() - player.getFoodConsumption();
-		if (proposed <= 0)
+		// reduce ant food level if time is a full second
+		if ((clockMili % 100) == 0)
 		{
-			player.setFoodLevel(0);
-			
-			// PATCH: should minus a life and reset when run out of food
-			player.setHealthLevel(player.getHealthLevel()-1);
-			player.setColor(ColorUtil.rgb(190, 190, 190));
-			lives--;
-			System.out.println("Ant is now dead. You have " +lives+ " remaining.\n");
-			
-			if (lives <=0)
+			int proposed = player.getFoodLevel() - player.getFoodConsumption();
+			if (proposed <= 0)
 			{
-				System.out.println("Game over, you failed!");
-				System.exit(0);
+				player.setFoodLevel(0);
+			
+				// PATCH: should minus a life and reset when run out of food
+				player.setHealthLevel(player.getHealthLevel()-1);
+				player.setColor(ColorUtil.rgb(190, 190, 190));
+				lives--;
+			
+				if (lives <=0)
+				{
+					System.out.println("Game over, you failed!");
+					System.exit(0);
+				}
+			
+				init();
+				return;
 			}
-			
-			System.out.println("Resetting game...\n");
-			init();
-			System.out.println("Game reset!\n");
-			return;
-			
+			else
+			{
+				player.setFoodLevel(proposed);
+			}
 		}
-		else
-		{
-			player.setFoodLevel(proposed);
-		}
-		
-		// increment game clock
-		clock++;
-		
-		System.out.println("Time has passed. Clock is now " + clock + ".\n");
-		
+				
 		setChanged();
 		notifyObservers();
 	}
@@ -749,7 +723,6 @@ public class GameWorld extends Observable {
 			System.exit(0);
 		}
 		subject.turnLeft();
-		System.out.println("Turned left. New heading is " + subject.getHeading() + "\n");
 		
 		setChanged();
 		notifyObservers();
@@ -775,7 +748,6 @@ public class GameWorld extends Observable {
 			System.exit(0);
 		}
 		subject.turnRight();
-		System.out.println("Turned right. New heading is " + subject.getHeading() + "\n");
 		
 		setChanged();
 		notifyObservers();

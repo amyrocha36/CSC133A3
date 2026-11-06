@@ -27,7 +27,7 @@ public class Spider extends Movable {
 		super( (60 + generator.nextInt(40)) , (new Point(50 + generator.nextInt(maxX - 100), 50 + generator.nextInt(maxY - 100))) , ColorUtil.BLACK,  maxX,  maxY); //chosen randomly on creation
 		setHeading(generator.nextInt(359)); //random value
 		
-		setSpeed(generator.nextInt(5) + 5); // random between 5 and 10
+		setSpeed(generator.nextInt(5) + 5); // random between 5 and 1=
 		super.setFoodLevel(MAXFOODLEVEL);
 	 }
 	
@@ -57,13 +57,15 @@ public class Spider extends Movable {
 		 *  @return N/A
 		 *  @preconditions N/A */
 	 @Override
-	 public void move() 
+	 public void move(float elapsed) 
 	 {
+		float newSpeed = (this.getSpeed() * elapsed) / 10 ;
+		 
 		 //NOTE: 0,0 IS BOTTOM LEFT HAND CORNER
 		 //NOTE: 0 DEGREES IS ACTUALLY RIGHT SO SHIFT BY 90
 		double headingRadians = Math.toRadians((360-getHeading())+90);
-		double deltaX = Math.cos(headingRadians) * getSpeed();
-		double deltaY = Math.sin(headingRadians)* getSpeed();
+		double deltaX = Math.cos(headingRadians) * newSpeed;
+		double deltaY = Math.sin(headingRadians)* newSpeed;
 		int newX = (int)getLocation().getX() + (int)deltaX;
 		int newY = (int)getLocation().getY() + (int)deltaY;
 		Random generator = new Random();
@@ -96,7 +98,7 @@ public class Spider extends Movable {
 		{
 			getLocation().setX(Math.round(MINX));
 		
-			if (newY >= MINY)
+			if (newY >= getMaxY())
 			{
 				getLocation().setY(Math.round(getMaxY()));
 				setHeading(90 + (randomInt/2));
