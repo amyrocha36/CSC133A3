@@ -1,5 +1,7 @@
 package com.mycompany.a3.gameObjects;
 import com.codename1.charts.util.ColorUtil;
+import com.codename1.ui.Graphics;
+
 import java.util.Random;
 import com.codename1.charts.models.Point;
 
@@ -21,8 +23,8 @@ public class Spider extends Movable {
 	 /** Constructor */
 	 public Spider(int maxX, int maxY)
 	 {
-		 // size is between 10 and 50
-		super( (10 + generator.nextInt(40)) , (new Point(generator.nextInt(maxX),generator.nextInt(maxY))) , ColorUtil.BLACK,  maxX,  maxY); //chosen randomly on creation
+		 // size is between 60 and 100
+		super( (60 + generator.nextInt(40)) , (new Point(50 + generator.nextInt(maxX - 100), 50 + generator.nextInt(maxY - 100))) , ColorUtil.BLACK,  maxX,  maxY); //chosen randomly on creation
 		setHeading(generator.nextInt(359)); //random value
 		
 		setSpeed(generator.nextInt(5) + 5); // random between 5 and 10
@@ -150,5 +152,30 @@ public class Spider extends Movable {
 		 return "Spider: loc=" + getLocation().getX() + "," + getLocation().getY() + " color=[" + ColorUtil.red(getColor()) +
 				 "," + ColorUtil.green(getColor()) + "," + ColorUtil.blue(getColor()) + "] heading=" + getHeading() + " speed=" + getSpeed()
 				 + " size=" + getSize() + "\n";
-		 }
+	 }
+	 
+		/** draws the spider as an unfilled triangle
+		 *  @return void
+		 *  @preconditions spider color and size must be set */
+		public void draw(Graphics g, Point pCmpRelPrnt)
+		{
+			g.setColor(this.getColor());
+							
+			// get triangle corners, 0 is bottom left, 1 is bottom right, 2 is top
+			int[] xValues = {0,0,0};
+			int[] yValues = {0,0,0};
+			
+			xValues[0]= (int)(pCmpRelPrnt.getX() + (this.getLocation().getX() - (this.getSize()/2))); 
+			yValues[0]= (int)(pCmpRelPrnt.getY() + (this.getLocation().getY() - (this.getSize()/2))); 
+			
+			xValues[1]= (int)(pCmpRelPrnt.getX() + (this.getLocation().getX() + (this.getSize()/2))); 
+			yValues[1]= (int)(pCmpRelPrnt.getY() + (this.getLocation().getY() - (this.getSize()/2))); 
+			
+			xValues[2]= (int)(pCmpRelPrnt.getX() + this.getLocation().getX()); 
+			yValues[2]= (int)(pCmpRelPrnt.getY() + (this.getLocation().getY() + (this.getSize()/2)));
+
+			
+			g.drawPolygon(xValues, yValues, 3);		
+		} 
+	 
 }

@@ -22,7 +22,7 @@ public class Game extends Form{
 	// methods
 	public Game() {
 		gw = new GameWorld();
-		center = new MapView();
+		center = new MapView(gw);
 		north  = new ScoreView();
 		
 		gw.addObserver(north);

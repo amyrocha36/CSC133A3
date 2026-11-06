@@ -1,5 +1,6 @@
 package com.mycompany.a3.gameObjects;
 import com.codename1.charts.util.ColorUtil;
+import com.codename1.ui.Graphics;
 import com.codename1.charts.models.Point;
 //
 
@@ -12,7 +13,7 @@ public class Ant extends Movable implements IFoodie {
 	private final static int CONSUMPTIONMIN = 1;
 	private final static int MAXFLAG = 9;
 	private final static int MAXHEALTH = 10;
-	private static final int ANTSIZE = 10;
+	private static final int ANTSIZE = 75;
 	private final static int MAXIMUMSPEED = 10;
 
 	
@@ -228,6 +229,21 @@ public class Ant extends Movable implements IFoodie {
 		return "Ant: loc=" + getLocation().getX() + "," + getLocation().getY() + " color=[" + ColorUtil.red(getColor()) + "," +
 				ColorUtil.green(getColor()) + "," + ColorUtil.blue(getColor()) + "] heading=" + getHeading() + " speed=" + 
 				getSpeed() + " size=" + getSize() + " maxSpeed=" + MAXIMUMSPEED + " foodConsumptionRate=" + foodConsumptionRate+ "\n";
+	}
+	
+	
+	/** draws the ant object as a filled circle
+	 *  @return void
+	 *  @preconditions ant color and size must be set */
+	public void draw(Graphics g, Point pCmpRelPrnt)
+	{
+		g.setColor(this.getColor());
+		
+		// location relative to parent
+		int x = (int)(pCmpRelPrnt.getX() + (this.getLocation().getX() - (this.getSize()/2)));
+		int y = (int)(pCmpRelPrnt.getY() + (this.getLocation().getY() - (this.getSize()/2)));
+		
+		g.fillArc(x, y, this.getSize(), this.getSize(), 0, 360);
 	}
 	
 }

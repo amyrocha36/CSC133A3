@@ -4,6 +4,7 @@ import java.util.Random;
 import com.codename1.charts.util.ColorUtil;
 import com.codename1.ui.Command;
 import com.codename1.ui.Dialog;
+import com.codename1.ui.Graphics;
 import com.codename1.ui.TextField;
 import com.mycompany.a3.gameObjects.*;
 import com.codename1.charts.models.Point;
@@ -39,6 +40,16 @@ public class GameWorld extends Observable {
 		clock = 0;
 		lives = 3;	
 	}
+	
+	
+	/** gets an iterator for the game objects collection
+	 *  @return iterator
+	 *  @preconditions n/A */
+	public IIterator getIterator()
+	{
+		return gameObjects.getIterator();
+	}
+	
 	
 	
 	/** gets the number of the last flag
@@ -786,11 +797,6 @@ public class GameWorld extends Observable {
 			System.exit(0);
 		}
 	}
-	
-	
-	/** implementation of notifyObservers
-	 *  @return N/A
-	 *  @preconditions N/A */
 	
 
 }

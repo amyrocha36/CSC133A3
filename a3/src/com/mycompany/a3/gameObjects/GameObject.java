@@ -1,18 +1,22 @@
 package com.mycompany.a3.gameObjects;
 import com.codename1.charts.models.Point;
+import com.codename1.ui.Graphics;
 //
+import com.mycompany.a3.IDrawable;
 
 
-public abstract class GameObject {
+public abstract class GameObject implements IDrawable {
 
 	// attributes
-	private int size; // size of the object, length fo square
+	private int size; // size of the object, length of square
 	private Point location; // location of object where 0,0 is left bottom corner
 	private int color; // color of object using colorUtil
 	
 	// constants
 	private int MAXX = 1000;
 	private int MAXY = 1000;
+	private int MINX = 0;
+	private int MINY = 0;
 	
 	// methods
 	
@@ -21,9 +25,13 @@ public abstract class GameObject {
 		this.size = size;
 		this.location = location;
 		this.color = color;
-		MAXX = maxX;
-		MAXY = maxY;
+		MAXX = maxX - size;
+		MAXY = maxY - size;
+		MINX = size;
+		MINY = size;
 	}
+	
+	public abstract void draw(Graphics g, Point pCmpRelPrnt);
 	
 	/** Returns size of object (width of hit box.
 	 *  @return size of object aka the width of the hit box
@@ -42,19 +50,37 @@ public abstract class GameObject {
 	}
 	
 	
-	/** Returns location of object (X,Y coordinate point of the middle).
-	 *  @return X,Y coordinate point of the middle of the object
-	 *  @preconditions location must have a value */
+	/** Returns maximum x
+	 *  @return maximum x
+	 *  @preconditions n/a */
 	public int getMaxX() 
 	{
 		return MAXX;
 	}
 	
 	
-	/** Returns location of object (X,Y coordinate point of the middle).
-	 *  @return X,Y coordinate point of the middle of the object
-	 *  @preconditions location must have a value */
+	/** Returns maximum y
+	 *  @return maximum y
+	 *  @preconditions n/a */
 	public int getMaxY() 
+	{
+		return MAXY;
+	}
+	
+	
+	/** Returns minimum x
+	 *  @return minimum x
+	 *  @preconditions n/a */
+	public int getMinX() 
+	{
+		return MAXX;
+	}
+	
+	
+	/** Returns minimum y
+	 *  @return minimum y
+	 *  @preconditions n/a */
+	public int getMinY() 
 	{
 		return MAXY;
 	}
@@ -88,5 +114,8 @@ public abstract class GameObject {
 	{	
 		this.color = color;
 	}
+	
+	
+	
 	
 }
