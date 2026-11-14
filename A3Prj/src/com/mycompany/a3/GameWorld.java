@@ -330,233 +330,6 @@ public class GameWorld extends Observable {
 		
 	}
 	
-	/** Simulates interaction of ant colliding with flag.
-	 *  @return N/A
-	 *  @preconditions n/a */
-	public void collideWithFlag() 
-	{
-		// get ant
-		IIterator iter = gameObjects.getIterator();
-
-		Ant subject = null;
-		
-		if (iter.hasNext())
-		{
-			subject = (Ant)iter.getNext();
-		}
-		else
-		{
-			System.exit(0);
-		}
-		
-		
-		
-		int number;
-		Command cOk = new Command("Ok");
-		Command cCancel = new Command("Cancel");
-		Command[] cmds = new Command[] {cOk, cCancel};
-		TextField myTF = new TextField();
-		Command c = Dialog.show("Enter a flag number:", myTF, cmds);
-		if (c == cOk)
-		{
-			try
-			{
-				number = Integer.parseInt(myTF.getText());			
-						
-				if (number <= totalFlags)
-				{
-					iter = gameObjects.getIterator();
-					Flag hit = null;
-					
-					while (iter.hasNext())
-					{
-						GameObject temp = iter.getNext();
-						
-						if (temp instanceof Flag)
-						{
-							hit = (Flag)temp;
-							break;
-						}
-					}
-		
-					subject.setLocation(hit.getLocation());
-			
-					if (subject.getLastFlagReached() == number-1)
-					{
-						subject.setLastFlagReached(number);
-				
-						// win condition
-						if (number == totalFlags)
-						{
-							System.out.println("Game over, you win! \n");
-							System.out.println("Total Time: " + clock + "\n");
-							System.exit(0);
-						}
-					}
-					else
-					{
-					}
-			
-				}
-			} catch (NumberFormatException e) 
-			{
-				Dialog.show("Invalid Input", "Flag number must be a valid integer between 1 and 9.", "OK", null);					
-			}
-		}
-		
-		setChanged();
-		notifyObservers();
-		
-	}
-	
-	/** Simulates interaction of ant colliding with food station.
-	 *  @return N/A
-	 *  @preconditions N/A */
-	public void collideWithFoodStation() 
-	{
-		// set up
-		IIterator iter = gameObjects.getIterator();
-		
-		
-		Ant subject = null;
-		
-		if (iter.hasNext())
-		{
-			subject = (Ant)iter.getNext();
-		}
-		else
-		{
-			System.exit(0);
-		}
-				
-		iter = gameObjects.getIterator();
-		FoodStation hit = null;
-		
-		while (iter.hasNext())
-		{
-			GameObject temp = iter.getNext();
-			
-			if (temp instanceof FoodStation)
-			{
-				hit = (FoodStation)temp;
-				
-				if (hit.getCapacity() != 0) {break;}
-			}
-		}		
-		// get food station with food, simulate collision
-			subject.setLocation(hit.getLocation());
-			
-			int change = 0;
-
-			
-		// check prevent going over max food level
-		if (subject.getFoodLevel() + hit.getCapacity() > MAXFOODLEVEL)
-		{
-			change = MAXFOODLEVEL - subject.getFoodLevel();
-			
-			subject.setFoodLevel(MAXFOODLEVEL);
-		}
-		else
-		{
-			subject.setFoodLevel(subject.getFoodLevel() + hit.getCapacity());
-			
-			change = hit.getCapacity();
-		}
-		
-		// phase out food station
-
-		hit.setCapacity(hit.getCapacity() - change);
-		hit.setColor(ColorUtil.rgb(186, 210, 161));
-		
-		// make new food station and add to list
-		FoodStation newStation = new FoodStation(width, height);
-		gameObjects.add(newStation);
-		totalFoodStations = totalFoodStations+1;
-		
-		
-		setChanged();
-		notifyObservers();
-		
-	}
-	
-	/** Simulates interaction of ant colliding with spider.
-	 *  @return true if ant is now dead, false if ant still alive.
-	 *  @preconditions N/A */
-	public void collideWithSpider() 
-	{
-		// set up
-		IIterator iter = gameObjects.getIterator();
-		
-		
-		Ant subject = null;
-		
-		if (iter.hasNext())
-		{
-			subject = (Ant)iter.getNext();
-		}
-		else
-		{
-			System.exit(0);
-		}
-		
-		iter = gameObjects.getIterator();
-		int index = generator.nextInt(totalSpiders-1);
-		Spider hit = null;
-		
-		while (iter.hasNext())
-		{
-			GameObject temp = iter.getNext();
-			
-			if (temp instanceof Spider)
-			{
-				hit = (Spider)temp;
-				break;
-			}
-		}		
-		
-		
-		for (int i=1; i<index; i++)
-		{
-			if (!iter.hasNext())
-			{
-				System.exit(1);
-			}
-			else
-			{
-				hit = (Spider)iter.getNext();
-			}
-		}
-		
-		subject.setLocation(hit.getLocation());
-		
-
-		// announce ant death if relevant
-		if (subject.getHealthLevel() == 1)
-		{
-			subject.setHealthLevel(subject.getHealthLevel()-1);
-			subject.setColor(ColorUtil.rgb(190, 190, 190));
-			lives--;
-			
-			if (lives <=0)
-			{
-				System.out.println("Game over, you failed!");
-				System.exit(0);
-			}
-			
-			init();
-			return;
-		}
-		else
-		{
-			subject.setHealthLevel(subject.getHealthLevel()-1);
-			subject.setColor(ColorUtil.rgb(ColorUtil.red(subject.getColor()), ColorUtil.green(subject.getColor())+19, ColorUtil.blue(subject.getColor())+19));
-		}
-		
-		setChanged();
-		notifyObservers();
-		
-	}
-	
 	
 	/** Displays the number of lives left, the elapsed time, the highest flag number 
 	 * reached, the ants current food level, and the ants health level in a readable
@@ -596,11 +369,7 @@ public class GameWorld extends Observable {
 						"b - Brake\n"+
 						"l - Left Turn\n"+
 						"r - Right Turn\n"+
-						"c - Set Food Consumption Rate\n"+
-						"f - Collide With Food Station\n"+
-						"g - Collide With Spider\n"+
-						"t - Tick";
-				
+						"c - Set Food Consumption Rate\n";				
 				
 				Dialog.show("Help Info", text, "OK", null);
 	}
@@ -669,6 +438,31 @@ public class GameWorld extends Observable {
 
 			}
 		}
+		
+		iter = gameObjects.getIterator();
+		while(iter.hasNext())
+		{
+			ICollider target = (ICollider)iter.getNext();
+			
+			IIterator iter2 = gameObjects.getIterator();
+			while (iter2.hasNext()) {
+				GameObject otherObj = iter2.getNext();
+				
+				if(target.collidesWith(otherObj))
+				{
+					target.handleCollision(otherObj);
+					
+					// case: food/ant
+					if((target instanceof Ant) && (otherObj instanceof FoodStation) && (((FoodStation)otherObj).getCapacity() < 1))
+					{
+						// make new food station and add to list
+						FoodStation newStation = new FoodStation(width, height);
+						gameObjects.add(newStation);
+						totalFoodStations = totalFoodStations+1;
+					}
+				}
+			}
+		}
 	
 		// reduce ant food level if time is a full second
 		if ((clockMili % 100) == 0)
@@ -697,7 +491,31 @@ public class GameWorld extends Observable {
 				player.setFoodLevel(proposed);
 			}
 		}
-				
+			
+		// win condition check
+		if (player.getLastFlagReached() == totalFlags)
+		{
+
+			System.out.println("Game over, you win! \n");
+			System.out.println("Total Time: " + clock + "\n");
+			System.exit(0);
+		}
+		
+		// check for lose condition
+		if (player.getHealthLevel() < 1)
+		{
+			lives--;
+			
+			if (lives <=0)
+			{
+				System.out.println("Game over, you failed!");
+				System.exit(0);
+			}
+			
+			init();
+		}
+		
+		
 		setChanged();
 		notifyObservers();
 	}

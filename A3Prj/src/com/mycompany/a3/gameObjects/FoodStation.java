@@ -88,5 +88,23 @@ public class FoodStation extends Fixed {
 			
 			g.drawString(text, x, y);
 		}
+		
+		
+		/** Food station only changes capacity and such when an ant collides with it
+		 *  @return N/A
+		 *  @preconditions N/A */
+		@Override
+		public void handleCollision(GameObject otherObject)
+		{
+			if (otherObject instanceof Ant)
+			{
+				capacity = capacity - ((Ant)otherObject).getDeltaFdLvl();
+				
+				if (capacity == 0)
+				{
+					setColor(ColorUtil.rgb(186, 210, 161));
+				}
+			}
+		}
 	
 }

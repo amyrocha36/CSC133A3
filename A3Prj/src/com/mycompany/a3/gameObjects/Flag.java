@@ -99,4 +99,13 @@ public class Flag extends Fixed {
 								
 				g.drawString((text), x, y);
 			}
+			
+			
+			/** flag doesn't need to respond to collission
+			 *  @return N/A
+			 *  @preconditions N/A */
+			@Override
+			public void handleCollision(GameObject otherObject)
+			{
+			}
 }

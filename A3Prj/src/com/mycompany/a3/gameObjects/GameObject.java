@@ -1,11 +1,12 @@
 package com.mycompany.a3.gameObjects;
 import com.codename1.charts.models.Point;
 import com.codename1.ui.Graphics;
+import com.mycompany.a3.ICollider;
 //
 import com.mycompany.a3.IDrawable;
 
 
-public abstract class GameObject implements IDrawable {
+public abstract class GameObject implements IDrawable, ICollider {
 
 	// attributes
 	private int size; // size of the object, length of square
@@ -116,6 +117,31 @@ public abstract class GameObject implements IDrawable {
 	}
 	
 	
+	/** Uses basic rectangular collision detection
+	 *  @return true if it detects a collision with the given object
+	 *  @preconditions all objects must have a size and a size accesser */
+	@Override
+	public Boolean collidesWith (GameObject otherObject)
+	{
+		float R1, L1, T1, B1, R2, L2, T2, B2;
+		Boolean sideHit, topHit, hit;
+		
+		R1 = getLocation().getX() + (size/2);
+		L1 = getLocation().getX() - (size/2);
+		T1 = getLocation().getY() + (size/2);
+		B1 = getLocation().getY() - (size/2);
+		
+		R2 = otherObject.getLocation().getX() + (size/2);
+		L2 = otherObject.getLocation().getX() - (size/2);
+		T2 = otherObject.getLocation().getY() + (size/2);
+		B2 = otherObject.getLocation().getY() - (size/2);
+		
+		sideHit = ((R1 < L2) || (L1 > R2))? true : false;
+		topHit = ((T2 < B1) || (T1 < B2))? true : false;
+		hit = ((sideHit == true) || (topHit == true))? true : false;
+		
+		return hit;
+	}
 	
 	
 }

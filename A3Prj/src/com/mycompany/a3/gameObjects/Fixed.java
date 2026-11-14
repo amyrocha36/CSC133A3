@@ -23,4 +23,5 @@ public abstract class Fixed extends GameObject {
 	{
 		 throw new UnsupportedOperationException("setLocation is currently disabled.");
 	}
+
 }

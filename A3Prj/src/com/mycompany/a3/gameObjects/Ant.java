@@ -22,6 +22,7 @@ public class Ant extends Movable implements IFoodie {
 	private int healthLevel;
 	private int lastFlagReached;
 	private Ant instance = null;
+	private int deltaFdLvl = 0;
 
 
 	
@@ -73,6 +74,22 @@ public class Ant extends Movable implements IFoodie {
 		
 		foodConsumptionRate = proposed;
 	}
+	
+	
+	/** sets the current food level plus getting the change between new and old food level
+	 *  @return N/A
+	 *  @preconditions N/A */
+	@Override
+	public void setFoodLevel(int foodLevel)
+	{
+		int pre = getFoodLevel();
+		
+		super.setFoodLevel(foodLevel);
+		
+		deltaFdLvl = getFoodLevel() - pre;
+	}
+	
+	
 	
 	/** Returns food consumption rate
 	 *  @return food consumption rate
@@ -246,4 +263,67 @@ public class Ant extends Movable implements IFoodie {
 		g.fillArc(x, y, this.getSize(), this.getSize(), 0, 360);
 	}
 	
+	
+	
+	/** returns the most recent change in food level 
+	 * @return the most recent change in food level
+	 * @preconditions THIS SHOULD ONLY BE USED ALONG SIDE HANDLE COLLISSION
+	 * 
+	 */
+	public int getDeltaFdLvl()
+	{
+		return deltaFdLvl;
+	}
+	
+	
+	/** Ant responds appropriately to collissions with food station, flag, and spider
+	 *  @return N/A
+	 *  @preconditions N/A */
+	@Override
+	public void handleCollision(GameObject otherObject)
+	{
+		// collission with food station
+		if (otherObject instanceof FoodStation)
+		{
+			FoodStation hit = (FoodStation) otherObject;
+			
+			if (getFoodLevel() + hit.getCapacity() > MAXFOODLEVEL)
+			{				
+				setFoodLevel(MAXFOODLEVEL);
+			}
+			else
+			{
+				setFoodLevel(getFoodLevel() + hit.getCapacity());
+			}
+		}
+		
+		
+		// collission with flag
+		if (otherObject instanceof Flag)
+		{
+			Flag hit = (Flag)otherObject;
+			
+			if (getLastFlagReached() == hit.getSequenceNumber()-1)
+			{
+				setLastFlagReached(hit.getSequenceNumber());
+			}
+		}
+		
+		
+		// collision with spider
+		if (otherObject instanceof Spider)
+		{
+			if (getHealthLevel() > 0)
+			{
+				setHealthLevel(getHealthLevel() -1);
+				setColor(ColorUtil.rgb(ColorUtil.red(getColor()), ColorUtil.green(getColor())+19, ColorUtil.blue(getColor())+19));
+			}
+			
+			if (getHealthLevel()  == 0)
+			{
+				setColor(ColorUtil.rgb(190, 190, 190));
+			}
+			
+		}
+	}
 }

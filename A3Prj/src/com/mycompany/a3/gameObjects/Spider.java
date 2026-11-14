@@ -179,5 +179,15 @@ public class Spider extends Movable {
 			
 			g.drawPolygon(xValues, yValues, 3);		
 		} 
+		
+		
+		/** Spider ironically doesn't really do anything itself during collisions. So this is a mostly empty function that can be used for testing.
+		 *  @return N/A
+		 *  @preconditions N/A */
+		@Override
+		public void handleCollision(GameObject otherObject)
+		{
+			System.out.print("Spider has collided");
+		}
 	 
 }

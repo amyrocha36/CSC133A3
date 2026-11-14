@@ -34,9 +34,6 @@ public class Game extends Form implements Runnable{
 		AboutInfo about = new AboutInfo(gw);
 		Accelerate acc = new Accelerate(gw);
 		Brake brake = new Brake(gw);
-		CollideWithFlag colFlag = new CollideWithFlag(gw);
-		CollideWithFoodStation colFood = new CollideWithFoodStation(gw);
-		CollideWithSpider colSpider = new CollideWithSpider(gw);
 		Exit exit = new Exit(gw);
 		HelpInfo help = new HelpInfo(gw);
 		LeftTurn left = new LeftTurn(gw);
@@ -68,9 +65,6 @@ public class Game extends Form implements Runnable{
 		Container south = new Container();
 		south.setLayout(new FlowLayout(Component.CENTER));
 		south.getAllStyles().setBorder(Border.createLineBorder(1,ColorUtil.BLACK));
-		south.add(new MyButton(colFlag));
-		south.add(new MyButton(colSpider));
-		south.add(new MyButton(colFood));
 		
 		add(BorderLayout.NORTH, north);
 		add(BorderLayout.SOUTH, south);
@@ -99,8 +93,6 @@ public class Game extends Form implements Runnable{
 		addKeyListener('b', brake);
 		addKeyListener('r', right);
 		addKeyListener('c', setConsumpt);
-		addKeyListener('f', colFood);
-		addKeyListener('g', colSpider);
 		addKeyListener('l', left);
 
 		
