@@ -1,6 +1,10 @@
 package com.mycompany.a3.gameObjects;
 import com.codename1.charts.util.ColorUtil;
 import com.codename1.ui.Graphics;
+import com.mycompany.a3.GameWorld;
+
+import java.util.Vector;
+
 import com.codename1.charts.models.Point;
 //
 
@@ -21,16 +25,15 @@ public class Ant extends Movable implements IFoodie {
 	private int foodConsumptionRate;
 	private int healthLevel;
 	private int lastFlagReached;
-	private Ant instance = null;
-	private int deltaFdLvl = 0;
+	private static Ant instance = null;
 
 
 	
 	// methods
 	/** Constructor */
-	public Ant(int maxX, int maxY)
+	private Ant(int maxX, int maxY, GameWorld gw)
 	{
-				super(ANTSIZE, new Point((maxX/2),(maxY/2)), ColorUtil.rgb(190, 0, 0),  maxX,  maxY);
+				super(ANTSIZE, new Point((maxX/2),(maxY/2)), ColorUtil.rgb(190, 0, 0),  maxX,  maxY, gw);
 		healthLevel = MAXHEALTH;
 		setHeading(0);
 		setSpeed(1);
@@ -40,14 +43,26 @@ public class Ant extends Movable implements IFoodie {
 	}
 	
 	
-	/** gets the singular instance of Ant
+	/** gets the singular instance of Ant and resets status of ant if health or foodlvl == 0
 	 *  @return instance of Ant
 	 *  @preconditions none */
-	public Ant getInstance(int maxX, int maxY)
+	public static Ant getInstance(int maxX, int maxY, GameWorld gw)
 	{
 		if (instance == null)
 		{
-			instance = new Ant(maxX, maxY);
+			instance = new Ant(maxX, maxY, gw);
+		}
+		
+		if ((instance.getHealthLevel() <= 0) || (instance.getFoodLevel() <=0))
+		{
+			instance.setLocation(new Point((maxX/2),(maxY/2)));
+			instance.setColor(ColorUtil.rgb(190, 0, 0));
+			instance.setHealthLevel(MAXHEALTH);
+			instance.setHeading(0);
+			instance.setSpeed(1);
+			instance.setFoodLevel(MAXFOODLEVEL);
+			instance.setFoodConsumption(2);
+			instance.setLastFlagReached(1);
 		}
 		
 		return instance;
@@ -81,12 +96,9 @@ public class Ant extends Movable implements IFoodie {
 	 *  @preconditions N/A */
 	@Override
 	public void setFoodLevel(int foodLevel)
-	{
-		int pre = getFoodLevel();
-		
+	{		
 		super.setFoodLevel(foodLevel);
 		
-		deltaFdLvl = getFoodLevel() - pre;
 	}
 	
 	
@@ -209,7 +221,7 @@ public class Ant extends Movable implements IFoodie {
 	 *  @preconditions N/A */
 	public void turnLeft() 
 	{
-		int proposed = getHeading()-5;
+		int proposed = getHeading()-10;
 		
 		if (proposed < 0)
 		{
@@ -226,7 +238,7 @@ public class Ant extends Movable implements IFoodie {
 	 *  @preconditions N/A */
 	public void turnRight() 
 	{
-		int proposed = getHeading()+5;		
+		int proposed = getHeading()+10;		
 		
 		if (proposed > 359)
 		{
@@ -264,66 +276,30 @@ public class Ant extends Movable implements IFoodie {
 	}
 	
 	
-	
-	/** returns the most recent change in food level 
-	 * @return the most recent change in food level
-	 * @preconditions THIS SHOULD ONLY BE USED ALONG SIDE HANDLE COLLISSION
-	 * 
-	 */
-	public int getDeltaFdLvl()
-	{
-		return deltaFdLvl;
-	}
-	
-	
-	/** Ant responds appropriately to collissions with food station, flag, and spider
+	/** Ant responds appropriately to collisions with food station, flag, and spider
 	 *  @return N/A
 	 *  @preconditions N/A */
 	@Override
 	public void handleCollision(GameObject otherObject)
 	{
-		// collission with food station
+		// collision with food station
 		if (otherObject instanceof FoodStation)
 		{
-			FoodStation hit = (FoodStation) otherObject;
-			
-			if (getFoodLevel() + hit.getCapacity() > MAXFOODLEVEL)
-			{				
-				setFoodLevel(MAXFOODLEVEL);
-			}
-			else
-			{
-				setFoodLevel(getFoodLevel() + hit.getCapacity());
-			}
+			getgw().collideWithFoodStation(this, (FoodStation)otherObject);
 		}
 		
 		
-		// collission with flag
+		// collision with flag
 		if (otherObject instanceof Flag)
 		{
-			Flag hit = (Flag)otherObject;
-			
-			if (getLastFlagReached() == hit.getSequenceNumber()-1)
-			{
-				setLastFlagReached(hit.getSequenceNumber());
-			}
+			getgw().collideWithFlag(this, (Flag)otherObject);
 		}
 		
 		
 		// collision with spider
 		if (otherObject instanceof Spider)
 		{
-			if (getHealthLevel() > 0)
-			{
-				setHealthLevel(getHealthLevel() -1);
-				setColor(ColorUtil.rgb(ColorUtil.red(getColor()), ColorUtil.green(getColor())+19, ColorUtil.blue(getColor())+19));
-			}
-			
-			if (getHealthLevel()  == 0)
-			{
-				setColor(ColorUtil.rgb(190, 190, 190));
-			}
-			
+			getgw().collideWithSpider(this, (Spider)otherObject);
 		}
 	}
 }

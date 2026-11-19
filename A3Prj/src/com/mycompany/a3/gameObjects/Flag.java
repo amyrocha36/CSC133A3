@@ -2,6 +2,7 @@ package com.mycompany.a3.gameObjects;
 import com.codename1.charts.util.ColorUtil;
 import com.codename1.ui.Font;
 import com.codename1.ui.Graphics;
+import com.mycompany.a3.GameWorld;
 import com.codename1.charts.models.Point;
 //
 
@@ -17,9 +18,9 @@ public class Flag extends Fixed {
 		 /** Constructor 
 		  * @return N/A
 		  * @preconditions number must be between 1 and 9, location must be between 0,0 and 1000,1000*/
-		 public Flag(int number, Point location, int maxX, int maxY)
+		 public Flag(int number, Point location, int maxX, int maxY, GameWorld gw)
 		 {
-			 super(FLAGSIZE, location, ColorUtil.rgb(255, 255, 0), maxX, maxY);
+			 super(FLAGSIZE, location, ColorUtil.rgb(255, 255, 0), maxX, maxY, gw);
 			 // input validation
 			 if (number < 1 || number > MAXFLAG)
 			 {
@@ -101,11 +102,15 @@ public class Flag extends Fixed {
 			}
 			
 			
-			/** flag doesn't need to respond to collission
+			/** responds appropriately when collision with ant
 			 *  @return N/A
 			 *  @preconditions N/A */
 			@Override
 			public void handleCollision(GameObject otherObject)
 			{
+				if (otherObject instanceof Ant)
+				{
+					getgw().collideWithFlag((Ant)otherObject, this);
+				}
 			}
 }

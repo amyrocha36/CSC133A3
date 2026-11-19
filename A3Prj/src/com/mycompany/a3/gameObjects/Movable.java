@@ -1,6 +1,7 @@
 package com.mycompany.a3.gameObjects;
 
 import com.codename1.charts.models.Point;
+import com.mycompany.a3.GameWorld;
 //
 
 public abstract class Movable extends GameObject {
@@ -16,9 +17,9 @@ public abstract class Movable extends GameObject {
 
 	
 	//Constructor
-	Movable(int size, Point location, int color, int maxX, int maxY)
+	Movable(int size, Point location, int color, int maxX, int maxY, GameWorld gw)
 	{
-		super(size, location, color, maxX, maxY);
+		super(size, location, color, maxX, maxY, gw);
 	}
 	
 	// methods

@@ -1,6 +1,9 @@
 package com.mycompany.a3.gameObjects;
+import java.util.Vector;
+
 import com.codename1.charts.models.Point;
 import com.codename1.ui.Graphics;
+import com.mycompany.a3.GameWorld;
 import com.mycompany.a3.ICollider;
 //
 import com.mycompany.a3.IDrawable;
@@ -18,10 +21,12 @@ public abstract class GameObject implements IDrawable, ICollider {
 	private int MAXY = 1000;
 	private int MINX = 0;
 	private int MINY = 0;
+	private GameWorld gw;
+	private Vector<GameObject> collisionVector = new Vector<GameObject>();
 	
 	// methods
 	
-	GameObject(int size, Point location, int color, int maxX, int maxY)
+	GameObject(int size, Point location, int color, int maxX, int maxY, GameWorld gw)
 	{
 		this.size = size;
 		this.location = location;
@@ -30,9 +35,19 @@ public abstract class GameObject implements IDrawable, ICollider {
 		MAXY = maxY - (size/2);
 		MINX = (size/2);
 		MINY = (size/2);
+		this.gw = gw;
 	}
 	
 	public abstract void draw(Graphics g, Point pCmpRelPrnt);
+	
+	/** returns current game world
+	 *  @return current game world
+	 *  @preconditions N/A */
+	public GameWorld getgw()
+	{
+		return gw;
+	}
+	
 	
 	/** Returns size of object (width of hit box.
 	 *  @return size of object aka the width of the hit box
@@ -117,6 +132,12 @@ public abstract class GameObject implements IDrawable, ICollider {
 	}
 	
 	
+	public void resetCollisionVector()
+	{
+		collisionVector.clear();
+	}
+	
+	
 	/** Uses basic rectangular collision detection
 	 *  @return true if it detects a collision with the given object
 	 *  @preconditions all objects must have a size and a size accesser */
@@ -124,7 +145,7 @@ public abstract class GameObject implements IDrawable, ICollider {
 	public Boolean collidesWith (GameObject otherObject)
 	{
 		float R1, L1, T1, B1, R2, L2, T2, B2;
-		Boolean sideHit, topHit, hit;
+		Boolean sideClear, topClear, hit;
 		
 		R1 = getLocation().getX() + (size/2);
 		L1 = getLocation().getX() - (size/2);
@@ -136,11 +157,23 @@ public abstract class GameObject implements IDrawable, ICollider {
 		T2 = otherObject.getLocation().getY() + (size/2);
 		B2 = otherObject.getLocation().getY() - (size/2);
 		
-		sideHit = ((R1 < L2) || (L1 > R2))? true : false;
-		topHit = ((T2 < B1) || (T1 < B2))? true : false;
-		hit = ((sideHit == true) || (topHit == true))? true : false;
+		sideClear = ((R1 < L2) || (L1 > R2))? true : false;
+		topClear = ((T2 < B1) || (T1 < B2))? true : false;
+		hit = ((sideClear == true) || (topClear == true))? false : true;
 		
-		return hit;
+		
+		if (collisionVector.contains(otherObject))
+		{
+			return false;
+		}
+		
+		if (hit)
+		{
+			collisionVector.add(otherObject);
+			return true;
+		}
+		
+		return false;
 	}
 	
 	

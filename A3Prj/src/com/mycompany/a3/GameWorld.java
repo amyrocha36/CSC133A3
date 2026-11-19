@@ -26,6 +26,7 @@ public class GameWorld extends Observable {
 	private int totalFoodStations = 3;
 	private int totalSpiders = 3;
 	private int totalFlags = 6;
+	private boolean damaged = false;
 	
 	private int width = 1000;		//EDIT LATER TO MATCH MAP VIEW
 	private int height = 1000;
@@ -196,7 +197,8 @@ public class GameWorld extends Observable {
 		gameObjects = new GameObjectCollection();
 		
 		// spawn ant
-				gameObjects.add(new Ant(width, height));
+				Ant tempObj  = Ant.getInstance(width, height, this);
+				gameObjects.add(tempObj);
 				
 				IIterator temp = gameObjects.getIterator();
 				
@@ -212,24 +214,24 @@ public class GameWorld extends Observable {
 				}
 				
 				// spawn flags 1-6 (index 1-6)
-				gameObjects.add(new Flag(1, new Point(antLocation.getX(), antLocation.getY()), width, height)); // flag 1 location = ant
-				gameObjects.add(new Flag(2, new Point((int)(width*0.55),(int)(height*0.55)), width, height));
-				gameObjects.add(new Flag(3, new Point((int)(width*0.47),(int)(height*0.63)), width, height));
-				gameObjects.add(new Flag(4, new Point((int)(width*0.34), (int)(height*0.50)), width, height));
-				gameObjects.add(new Flag(5, new Point((int) (width*0.55), (int)(height*0.29)), width, height));
-				gameObjects.add(new Flag(6, new Point((int)(width*0.89), (int)(height*0.63)), width, height));
+				gameObjects.add(new Flag(1, new Point(antLocation.getX(), antLocation.getY()), width, height, this)); // flag 1 location = ant
+				gameObjects.add(new Flag(2, new Point((int)(width*0.55),(int)(height*0.55)), width, height, this));
+				gameObjects.add(new Flag(3, new Point((int)(width*0.47),(int)(height*0.63)), width, height, this));
+				gameObjects.add(new Flag(4, new Point((int)(width*0.34), (int)(height*0.50)), width, height, this));
+				gameObjects.add(new Flag(5, new Point((int) (width*0.55), (int)(height*0.29)), width, height, this));
+				gameObjects.add(new Flag(6, new Point((int)(width*0.89), (int)(height*0.63)), width, height, this));
 				
 				// spawn 3 spiders (index 7-9)
 				for (int i=0; i < totalSpiders; i++)
 				{
-					gameObjects.add(new Spider(width, height));
+					gameObjects.add(new Spider(width, height, this));
 
 				}
 				
 				// spawn 3 food stations (index 10-12)
 				for (int i=0; i < totalFoodStations; i++)
 				{
-					gameObjects.add(new FoodStation(width, height));
+					gameObjects.add(new FoodStation(width, height, this));
 
 				}
 				
@@ -330,6 +332,108 @@ public class GameWorld extends Observable {
 		
 	}
 	
+	/** Simulates interaction of ant colliding with flag.
+	 *  @return N/A
+	 *  @preconditions n/a */
+	public void collideWithFlag(Ant player, Flag target) 
+	{
+
+		if (player.getLastFlagReached() == target.getSequenceNumber()-1)
+			{
+				player.setLastFlagReached(target.getSequenceNumber());
+				
+				// win condition
+				if (target.getSequenceNumber() == totalFlags)
+					{
+						System.out.println("Game over, you win! \n");
+						System.out.println("Total Time: " + clock + "\n");
+						System.exit(0);
+					}
+			}
+		
+		setChanged();
+		notifyObservers();
+		
+	}
+	
+	/** Simulates interaction of ant colliding with food station.
+	 *  @return N/A
+	 *  @preconditions N/A */
+	public void collideWithFoodStation(Ant player, FoodStation target) 
+	{
+		
+		int change = 0;
+
+			
+		// check prevent going over max food level
+		if (player.getFoodLevel() + target.getCapacity() > MAXFOODLEVEL)
+		{
+			change = MAXFOODLEVEL - player.getFoodLevel();
+			
+			player.setFoodLevel(MAXFOODLEVEL);
+		}
+		else
+		{
+			player.setFoodLevel(player.getFoodLevel() + target.getCapacity());
+			
+			change = target.getCapacity();
+		}
+		
+		// modify capacity if not dead and check if dead
+		if (target.getStatus() == false)
+		{
+			target.setCapacity(target.getCapacity() - change);
+			
+			if (target.getCapacity() <= 0)
+			{
+				target.setColor(ColorUtil.rgb(186, 210, 161));
+				target.setStatus(true);
+		
+				// make new food station and add to list
+				FoodStation newStation = new FoodStation(width, height, this);
+				gameObjects.add(newStation);
+				totalFoodStations = totalFoodStations+1;
+			}
+		}
+		
+		
+		setChanged();
+		notifyObservers();
+		
+	}
+	
+	/** Simulates interaction of ant colliding with spider.
+	 *  @return true if ant is now dead, false if ant still alive.
+	 *  @preconditions N/A */
+	public void collideWithSpider(Ant player, Spider target) 
+	{
+		// announce ant death if relevant
+		if (player.getHealthLevel() == 1)
+		{
+			player.setHealthLevel(player.getHealthLevel()-1);
+			player.setColor(ColorUtil.rgb(190, 190, 190));
+			lives--;
+			
+			if (lives <=0)
+			{
+				System.out.println("Game over, you failed!");
+				System.exit(0);
+			}
+			
+			init();
+			return;
+		}
+		else
+		{
+			player.setHealthLevel(player.getHealthLevel()-1);
+			player.setColor(ColorUtil.rgb(ColorUtil.red(player.getColor()), ColorUtil.green(player.getColor())+19, ColorUtil.blue(player.getColor())+19));
+		}
+		
+		setChanged();
+		notifyObservers();
+		
+	}
+	
 	
 	/** Displays the number of lives left, the elapsed time, the highest flag number 
 	 * reached, the ants current food level, and the ants health level in a readable
@@ -369,7 +473,11 @@ public class GameWorld extends Observable {
 						"b - Brake\n"+
 						"l - Left Turn\n"+
 						"r - Right Turn\n"+
-						"c - Set Food Consumption Rate\n";				
+						"c - Set Food Consumption Rate\n"+
+						"f - Collide With Food Station\n"+
+						"g - Collide With Spider\n"+
+						"t - Tick";
+				
 				
 				Dialog.show("Help Info", text, "OK", null);
 	}
@@ -406,9 +514,10 @@ public class GameWorld extends Observable {
 		// increment game clock
 		clockMili = clockMili + 20;
 		
-		if ((clockMili % 100) == 0)
+		if ((clockMili % 500) == 0)
 		{
 			clock++;
+			damaged =  false;
 		}
 		
 		
@@ -439,33 +548,50 @@ public class GameWorld extends Observable {
 			}
 		}
 		
+		// collision detection
 		iter = gameObjects.getIterator();
-		while(iter.hasNext())
+		while (iter.hasNext())
 		{
-			ICollider target = (ICollider)iter.getNext();
+			GameObject curObj = iter.getNext();
 			
 			IIterator iter2 = gameObjects.getIterator();
-			while (iter2.hasNext()) {
+			while(iter2.hasNext())
+			{
 				GameObject otherObj = iter2.getNext();
 				
-				if(target.collidesWith(otherObj))
+				if (otherObj != curObj)
 				{
-					target.handleCollision(otherObj);
-					
-					// case: food/ant
-					if((target instanceof Ant) && (otherObj instanceof FoodStation) && (((FoodStation)otherObj).getCapacity() < 1))
+					if (curObj.collidesWith(otherObj))
 					{
-						// make new food station and add to list
-						FoodStation newStation = new FoodStation(width, height);
-						gameObjects.add(newStation);
-						totalFoodStations = totalFoodStations+1;
+						// prevents ant from being damaged too quickly, ant only gets damaged once per second
+						if (((curObj instanceof Ant) && (otherObj instanceof Spider)) || ((curObj instanceof Spider) && (otherObj instanceof Ant)))
+						{
+							if (damaged == true)
+							{
+								continue;
+							}
+							curObj.handleCollision(otherObj);
+							damaged = true;
+						}
+						else
+						{
+							curObj.handleCollision(otherObj);
+						}
 					}
 				}
 			}
 		}
+		
+		// reset all collision vectors
+		iter = gameObjects.getIterator();
+		while (iter.hasNext()) 
+		{
+			GameObject curObj = iter.getNext();
+			curObj.resetCollisionVector();
+		}
 	
 		// reduce ant food level if time is a full second
-		if ((clockMili % 100) == 0)
+		if ((clockMili % 500) == 0)
 		{
 			int proposed = player.getFoodLevel() - player.getFoodConsumption();
 			if (proposed <= 0)
@@ -491,31 +617,7 @@ public class GameWorld extends Observable {
 				player.setFoodLevel(proposed);
 			}
 		}
-			
-		// win condition check
-		if (player.getLastFlagReached() == totalFlags)
-		{
-
-			System.out.println("Game over, you win! \n");
-			System.out.println("Total Time: " + clock + "\n");
-			System.exit(0);
-		}
-		
-		// check for lose condition
-		if (player.getHealthLevel() < 1)
-		{
-			lives--;
-			
-			if (lives <=0)
-			{
-				System.out.println("Game over, you failed!");
-				System.exit(0);
-			}
-			
-			init();
-		}
-		
-		
+				
 		setChanged();
 		notifyObservers();
 	}

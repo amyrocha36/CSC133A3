@@ -1,6 +1,7 @@
 package com.mycompany.a3.gameObjects;
 import com.codename1.charts.util.ColorUtil;
 import com.codename1.ui.Graphics;
+import com.mycompany.a3.GameWorld;
 
 import java.util.Random;
 import com.codename1.charts.models.Point;
@@ -21,10 +22,10 @@ public class Spider extends Movable {
 	
 	// methods
 	 /** Constructor */
-	 public Spider(int maxX, int maxY)
+	 public Spider(int maxX, int maxY, GameWorld gw)
 	 {
 		 // size is between 60 and 100
-		super( (60 + generator.nextInt(40)) , (new Point(50 + generator.nextInt(maxX - 100), 50 + generator.nextInt(maxY - 100))) , ColorUtil.BLACK,  maxX,  maxY); //chosen randomly on creation
+		super( (60 + generator.nextInt(40)) , (new Point(50 + generator.nextInt(maxX - 100), 50 + generator.nextInt(maxY - 100))) , ColorUtil.BLACK,  maxX,  maxY, gw); //chosen randomly on creation
 		setHeading(generator.nextInt(359)); //random value
 		
 		setSpeed(generator.nextInt(5) + 5); // random between 5 and 1=
@@ -181,13 +182,16 @@ public class Spider extends Movable {
 		} 
 		
 		
-		/** Spider ironically doesn't really do anything itself during collisions. So this is a mostly empty function that can be used for testing.
+		/** responds to collision with an
 		 *  @return N/A
 		 *  @preconditions N/A */
 		@Override
 		public void handleCollision(GameObject otherObject)
 		{
-			System.out.print("Spider has collided");
+			if (otherObject instanceof Ant)
+			{
+				getgw().collideWithSpider((Ant)otherObject, this);
+			}
 		}
 	 
 }
