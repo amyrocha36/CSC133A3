@@ -1,10 +1,12 @@
 package com.mycompany.a3.gameObjects;
 import com.codename1.charts.models.Point;
+import com.codename1.ui.Graphics;
 import com.mycompany.a3.GameWorld;
+import com.mycompany.a3.ISelectable;
 //
 
 
-public abstract class Fixed extends GameObject {
+public abstract class Fixed extends GameObject implements ISelectable{
 	
 	// methods
 	
@@ -15,14 +17,11 @@ public abstract class Fixed extends GameObject {
 		super(size, location, color,  maxX,  maxY, gw);
 	}
 	
-	/** Overriding the setLocation function in GameObject to prohibit changing the 
-	 * location of the object.
-	 *  @return N/A
-	 *  @preconditions N/A */
-	@Override
-	public void setLocation(Point location) 
-	{
-		 throw new UnsupportedOperationException("setLocation is currently disabled.");
-	}
-
+	public abstract void setSelected(boolean b);
+	
+	public abstract boolean isSelected();
+	
+	public abstract boolean contains(Point pPtrRelPrnt, Point pCmpRelPrnt);
+	
+	public abstract void draw(Graphics g, Point pCmpRelPrnt);
 }

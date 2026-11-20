@@ -15,6 +15,7 @@ public class FoodStation extends Fixed {
 	private int capacity;
 	private static Random generator = new Random();
 	private boolean dead = false;
+	private boolean isSelected = false;
 
 	
 	// constants
@@ -81,34 +82,6 @@ public class FoodStation extends Fixed {
 				 " color=[" + ColorUtil.red(getColor()) + "," + ColorUtil.green(getColor())+
 				 "," + ColorUtil.blue(getColor()) + "] size=" + getSize() + " capacity=" + capacity + "\n";
 	 }
-	 
-	 
-		/** draws food station as filled squares with their capacity printed on them
-		 *  @return void
-		 *  @preconditions food station color, capacity, and size must be set */
-		public void draw(Graphics g, Point pCmpRelPrnt)
-		{
-			g.setColor(this.getColor());
-			
-			// location relative to parent
-			int x = (int)(pCmpRelPrnt.getX() + (this.getLocation().getX() - (this.getSize()/2)));
-			int y = (int)(pCmpRelPrnt.getY() + (this.getLocation().getY() - (this.getSize()/2)));
-			
-			g.fillRect(x, y, this.getSize(), this.getSize());
-			
-			g.setColor(ColorUtil.BLACK);
-			Font small = Font.createSystemFont(g.getFont().getStyle(), Font.STYLE_PLAIN, Font.SIZE_SMALL);
-			
-			String text = "" + capacity;
-			
-			x = (int)(pCmpRelPrnt.getX() + (this.getLocation().getX()));
-			y = (int)(pCmpRelPrnt.getY() + (this.getLocation().getY()));
-			
-			x = x - (small.stringWidth(text));
-			y = y - (small.getHeight());
-			
-			g.drawString(text, x, y);
-		}
 		
 		
 		/** Food station only changes capacity and such when an ant collides with it
@@ -122,5 +95,86 @@ public class FoodStation extends Fixed {
 				getgw().collideWithFoodStation((Ant)otherObject, this);
 			}
 		}
+		
+		
+		/** sets isSelected
+		 *  @return N/A
+		 *  @preconditions N/A */
+		@Override
+		public void setSelected(boolean b)
+		{
+			isSelected = b;
+		}
+		
+		
+		/** gets isSelected
+		 *  @return true if shape is selected
+		 *  @preconditions N/A */
+		@Override
+		public boolean isSelected()
+		{
+			return isSelected;
+		}
+		
+		
+		/** checks if the pointer is contained in the object
+		 *  @return true if pointer contained false if otherwise
+		 *  @preconditions N/A */
+		@Override
+		public boolean contains(Point pPtrRelPrnt, Point pCmpRelPrnt)
+		{
+			float px = pPtrRelPrnt.getX();
+			float py = pPtrRelPrnt.getY();
+			float xLoc = (pCmpRelPrnt.getX() + (this.getLocation().getX() - (this.getSize()/2.0f)));
+			float yLoc = (pCmpRelPrnt.getY() + (this.getLocation().getY() - (this.getSize()/2.0f)));
+			
+			if ((px >= xLoc) && (px <= xLoc + getSize()) && (py >= yLoc) && (py <= yLoc + getSize()))
+			{
+				return true;
+			}
+			
+			return false;
+		}
+		
+		
+		/** draws object depending on if it's selected or not, draws food station as squares with their capacity printed on them
+		 *  @return N/A
+		 *  @preconditions food station color, capacity, and size must be set*/
+		@Override
+		public void draw(Graphics g, Point pCmpRelPrnt)
+		{
+			
+			// upper left location relative to parent
+			int x = (int)(pCmpRelPrnt.getX() + (this.getLocation().getX() - (this.getSize()/2.0f)));
+			int y = (int)(pCmpRelPrnt.getY() + (this.getLocation().getY() - (this.getSize()/2.0f)));
+			
+			// get center relative to parent shifted for text
+			int Centerx = (int)(pCmpRelPrnt.getX() + (this.getLocation().getX()));
+			int Centery = (int)(pCmpRelPrnt.getY() + (this.getLocation().getY()));
+			
+			Font small = Font.createSystemFont(g.getFont().getStyle(), Font.STYLE_PLAIN, Font.SIZE_SMALL);
+			String text = "" + capacity;
+			
+			Centerx = Centerx - (small.stringWidth(text));
+			Centery = Centery - (small.getHeight());
+			
+			g.setColor(this.getColor());
+
+			
+			if(isSelected())
+			{
+				g.drawRect(x, y, this.getSize(), this.getSize());
+			}
+			else
+			{
+				g.fillRect(x, y, this.getSize(), this.getSize());
+			}
+			
+			
+			g.setColor(ColorUtil.BLACK);
+			
+			g.drawString(text, Centerx, Centery);
+		}
+		
 	
 }

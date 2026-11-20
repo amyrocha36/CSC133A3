@@ -28,7 +28,7 @@ public class GameWorld extends Observable {
 	private int totalFlags = 6;
 	private boolean damaged = false;
 	
-	private int width = 1000;		//EDIT LATER TO MATCH MAP VIEW
+	private int width = 1000;		
 	private int height = 1000;
 
 	
@@ -689,6 +689,8 @@ public class GameWorld extends Observable {
 			System.exit(0);
 		}
 	}
+	
+	
 	
 
 }
