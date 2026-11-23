@@ -71,16 +71,16 @@ public class GameWorld extends Observable {
 	{
 		System.out.print("Sounds creation started\n");
 		
-		bg = new BGSound("alarm.wav", "audio/wav");
+		bg = new BGSound("Bubbling.wav", "audio/wav");
 		System.out.print("background sound added\n");
 		
-		dmg = new Sound("alarm.wav", "audio/wav");
+		dmg = new Sound("dmg.wav", "audio/wav");
 		System.out.print("dmg sound added\n");
 		
-		goal = new Sound("alarm.wav", "audio/wav");
+		goal = new Sound("goal.wav", "audio/wav");
 		System.out.print("goal sound added\n");
 
-		consume = new Sound("alarm.wav", "audio/wav");
+		consume = new Sound("consume.wav", "audio/wav");
 		System.out.print("consume sound added\n");
 		
 		System.out.print("Sounds created\n");
@@ -90,6 +90,11 @@ public class GameWorld extends Observable {
 	public void setPlay(boolean b)
 	{
 		playState = b;
+		
+		if (bg == null)
+		{
+			bg = new BGSound("Bubbling.wav", "audio/wav");
+		}
 		
 		if (playState == false)
 		{
@@ -210,6 +215,11 @@ public class GameWorld extends Observable {
 	public void setSound(boolean offOn)
 	{
 		sound = offOn;
+		
+		if (bg == null)
+		{
+			bg = new BGSound("Bubbling.wav", "audio/wav");
+		}
 		
 		if ((sound == true) && (playState == true))
 		{
@@ -397,7 +407,15 @@ public class GameWorld extends Observable {
 
 		if (player.getLastFlagReached() == target.getSequenceNumber()-1)
 			{
-				if(sound == true) {goal.play();}
+				if(sound == true) 
+				{
+					if (goal == null)
+					{
+						goal = new Sound("goal.wav", "audio/wav");
+					}
+					
+					goal.play();
+				}
 				
 				
 				player.setLastFlagReached(target.getSequenceNumber());
@@ -428,7 +446,15 @@ public class GameWorld extends Observable {
 		if (target.getStatus() == false)
 		{
 			// play sound on hit
-			if(sound == true) {consume.play();}
+			if(sound == true) 
+			{
+				if (consume == null)
+				{
+					consume = new Sound("consume.wav", "audio/wav");
+				}
+				
+				consume.play();
+			}
 			
 		// check prevent going over max food level
 		if (player.getFoodLevel() + target.getCapacity() > MAXFOODLEVEL)
@@ -471,7 +497,15 @@ public class GameWorld extends Observable {
 	public void collideWithSpider(Ant player, Spider target) 
 	{
 		// play sound on hit
-		if(sound == true) {dmg.play();}
+		if(sound == true) 
+		{
+			if (dmg == null)
+			{
+				dmg = new Sound("dmg.wav", "audio/wav");
+			}
+			
+			dmg.play();
+		}
 		
 		// announce ant death if relevant
 		if (player.getHealthLevel() == 1)

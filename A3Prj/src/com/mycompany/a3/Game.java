@@ -149,8 +149,8 @@ public class Game extends Form implements Runnable{
 		gw.init();
 		revalidate();
 		
-		gw.createSounds();
-		revalidate();
+		//gw.createSounds();
+		//revalidate();
 		
 		timer.schedule(20, true, this);
 	} 
