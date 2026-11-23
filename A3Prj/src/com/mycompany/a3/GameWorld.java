@@ -27,9 +27,19 @@ public class GameWorld extends Observable {
 	private int totalSpiders = 3;
 	private int totalFlags = 6;
 	private boolean damaged = false;
+	private boolean consumed = false;
+	private boolean playState = true;
 	
 	private int width = 1000;		
 	private int height = 1000;
+	
+	
+	// sounds
+	private Sound dmg;
+	private Sound consume;
+	private Sound goal;
+	private BGSound bg;
+
 
 	
 	// methods
@@ -52,6 +62,47 @@ public class GameWorld extends Observable {
 		return gameObjects.getIterator();
 	}
 	
+	
+	
+	/** creates game sounds
+	 *  @return N/A
+	 *  @preconditions N/A */
+	public void createSounds()
+	{
+		System.out.print("Sounds creation started\n");
+		
+		bg = new BGSound("alarm.wav", "audio/wav");
+		System.out.print("background sound added\n");
+		
+		dmg = new Sound("alarm.wav", "audio/wav");
+		System.out.print("dmg sound added\n");
+		
+		goal = new Sound("alarm.wav", "audio/wav");
+		System.out.print("goal sound added\n");
+
+		consume = new Sound("alarm.wav", "audio/wav");
+		System.out.print("consume sound added\n");
+		
+		System.out.print("Sounds created\n");
+	}
+	
+	
+	public void setPlay(boolean b)
+	{
+		playState = b;
+		
+		if (playState == false)
+		{
+			bg.pause();
+		}
+		else
+		{
+			if (sound == true)
+			{
+				bg.play();
+			}
+		}
+	}
 	
 	
 	/** gets the number of the last flag
@@ -159,6 +210,12 @@ public class GameWorld extends Observable {
 	public void setSound(boolean offOn)
 	{
 		sound = offOn;
+		
+		if ((sound == true) && (playState == true))
+		{
+			bg.play();
+		}
+		
 		setChanged();
 		notifyObservers();
 	}
@@ -340,6 +397,9 @@ public class GameWorld extends Observable {
 
 		if (player.getLastFlagReached() == target.getSequenceNumber()-1)
 			{
+				if(sound == true) {goal.play();}
+				
+				
 				player.setLastFlagReached(target.getSequenceNumber());
 				
 				// win condition
@@ -364,6 +424,11 @@ public class GameWorld extends Observable {
 		
 		int change = 0;
 
+		// modify capacity if not dead and check if dead
+		if (target.getStatus() == false)
+		{
+			// play sound on hit
+			if(sound == true) {consume.play();}
 			
 		// check prevent going over max food level
 		if (player.getFoodLevel() + target.getCapacity() > MAXFOODLEVEL)
@@ -379,9 +444,7 @@ public class GameWorld extends Observable {
 			change = target.getCapacity();
 		}
 		
-		// modify capacity if not dead and check if dead
-		if (target.getStatus() == false)
-		{
+		
 			target.setCapacity(target.getCapacity() - change);
 			
 			if (target.getCapacity() <= 0)
@@ -407,6 +470,9 @@ public class GameWorld extends Observable {
 	 *  @preconditions N/A */
 	public void collideWithSpider(Ant player, Spider target) 
 	{
+		// play sound on hit
+		if(sound == true) {dmg.play();}
+		
 		// announce ant death if relevant
 		if (player.getHealthLevel() == 1)
 		{
@@ -518,6 +584,7 @@ public class GameWorld extends Observable {
 		{
 			clock++;
 			damaged =  false;
+			consumed =  false;
 		}
 		
 		
@@ -563,36 +630,23 @@ public class GameWorld extends Observable {
 				{
 					if (curObj.collidesWith(otherObj))
 					{
-						// prevents ant from being damaged too quickly, ant only gets damaged once per second
-						if (((curObj instanceof Ant) && (otherObj instanceof Spider)) || ((curObj instanceof Spider) && (otherObj instanceof Ant)))
-						{
-							if (damaged == true)
-							{
-								continue;
-							}
 							curObj.handleCollision(otherObj);
-							damaged = true;
-						}
-						else
-						{
-							curObj.handleCollision(otherObj);
-						}
 					}
 				}
 			}
-		}
-		
-		// reset all collision vectors
-		iter = gameObjects.getIterator();
-		while (iter.hasNext()) 
-		{
-			GameObject curObj = iter.getNext();
-			curObj.resetCollisionVector();
 		}
 	
 		// reduce ant food level if time is a full second
 		if ((clockMili % 500) == 0)
 		{
+			// reset all collision vectors
+			iter = gameObjects.getIterator();
+			while (iter.hasNext()) 
+			{
+				GameObject curObj = iter.getNext();
+				curObj.resetCollisionVector();
+			}
+			
 			int proposed = player.getFoodLevel() - player.getFoodConsumption();
 			if (proposed <= 0)
 			{
@@ -646,7 +700,6 @@ public class GameWorld extends Observable {
 		
 		setChanged();
 		notifyObservers();
-
 	}
 	
 	/** Changes the heading of the object +5 degrees
@@ -690,7 +743,4 @@ public class GameWorld extends Observable {
 		}
 	}
 	
-	
-	
-
 }

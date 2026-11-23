@@ -138,6 +138,13 @@ public abstract class GameObject implements IDrawable, ICollider {
 	}
 	
 	
+	
+	public Vector<GameObject> getCollisionVector()
+	{
+		return collisionVector;
+	}
+	
+	
 	/** Uses basic rectangular collision detection
 	 *  @return true if it detects a collision with the given object
 	 *  @preconditions all objects must have a size and a size accesser */
@@ -162,7 +169,7 @@ public abstract class GameObject implements IDrawable, ICollider {
 		hit = ((sideClear == true) || (topClear == true))? false : true;
 		
 		
-		if (collisionVector.contains(otherObject))
+		if ((collisionVector.contains(otherObject)) || (otherObject.getCollisionVector().contains(this)))
 		{
 			return false;
 		}

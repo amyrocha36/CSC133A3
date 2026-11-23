@@ -25,7 +25,7 @@ public class ToggleSound extends Command {
 	 *  @preconditions N/A */
 	@Override
 	public void actionPerformed(ActionEvent evt)
-	{
+	{		
 		if (target.getSound())
 		{
 			target.setSound(false);

@@ -27,6 +27,7 @@ public class Game extends Form implements Runnable{
 	private Container west;
 	private UITimer timer = new UITimer(this);
 	private Toolbar myBar;
+	private boolean playState = true;
 	
 	// buttons
 	private MyButton accelerate;
@@ -146,7 +147,10 @@ public class Game extends Form implements Runnable{
 		
 		System.out.print("Width " + center.getWidth() + " Height:" + center.getHeight() + "\n");
 		gw.init();
+		revalidate();
 		
+		gw.createSounds();
+		revalidate();
 		
 		timer.schedule(20, true, this);
 	} 
@@ -195,6 +199,7 @@ public class Game extends Form implements Runnable{
 		myBar.addCommandToSideMenu(exit);
 		
 		center.setPlay(false);
+		gw.setPlay(false);
 		
 		revalidate();
 		
@@ -236,6 +241,7 @@ public class Game extends Form implements Runnable{
 		myBar.addCommandToSideMenu(exit);
 		
 		center.setPlay(true);
+		gw.setPlay(true);
 		
 		// unselect all during play
 	
